@@ -1,0 +1,82 @@
+import { useState } from 'react';
+import type { CalculationResult } from '../types/calculator';
+import { buildWhatsAppUrl } from '../utils/whatsapp';
+import { PrintModal } from './PrintModal';
+
+interface ActionBarProps {
+  result: CalculationResult;
+  onSave: () => void;
+}
+
+export function ActionBar({ result, onSave }: ActionBarProps) {
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
+  const whatsappUrl = buildWhatsAppUrl(result);
+
+  const handleWhatsApp = () => {
+    onSave();
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenPrintModal = () => {
+    setPdfError(null);
+    setIsPrintModalOpen(true);
+  };
+
+  const handleClosePrintModal = () => {
+    if (isPdfLoading) return;
+    setIsPrintModalOpen(false);
+    setPdfError(null);
+  };
+
+  const handlePrintSubmit = async (buyerName: string, guarantorName: string) => {
+    setIsPdfLoading(true);
+    setPdfError(null);
+
+    try {
+      const { generateMurabuyPdf, buildPdfFilename, downloadPdf, printPdf } = await import(
+        '../pdf/generatePdf'
+      );
+
+      const blob = await generateMurabuyPdf(result, { buyerName, guarantorName });
+      const filename = buildPdfFilename(buyerName);
+
+      downloadPdf(blob, filename);
+      await printPdf(blob);
+      onSave();
+      setIsPrintModalOpen(false);
+    } catch {
+      setPdfError('Не удалось сформировать PDF. Попробуйте ещё раз.');
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <section className="action-bar">
+        <button type="button" className="btn btn--primary" onClick={handleWhatsApp}>
+          Отправить расчёт в WhatsApp
+        </button>
+        <button type="button" className="btn btn--secondary" onClick={handleOpenPrintModal}>
+          Печать результата
+        </button>
+
+        <div className="action-bar__note">
+          <strong>Для оформления потребуются:</strong>
+          <span>паспорт покупателя, паспорт поручителя и номер телефона</span>
+        </div>
+      </section>
+
+      <PrintModal
+        isOpen={isPrintModalOpen}
+        isLoading={isPdfLoading}
+        error={pdfError}
+        onClose={handleClosePrintModal}
+        onSubmit={handlePrintSubmit}
+      />
+    </>
+  );
+}
