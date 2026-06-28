@@ -5,6 +5,10 @@ const currencyFormatter = new Intl.NumberFormat('ru-RU', {
   maximumFractionDigits: 2,
 });
 
+const numberFormatter = new Intl.NumberFormat('ru-RU', {
+  maximumFractionDigits: 2,
+});
+
 const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: '2-digit',
   month: 'long',
@@ -13,6 +17,10 @@ const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
 
 export function formatCurrency(value: number): string {
   return currencyFormatter.format(value);
+}
+
+export function formatNumber(value: number): string {
+  return numberFormatter.format(value);
 }
 
 export function formatDate(date: Date): string {

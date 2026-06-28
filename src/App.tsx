@@ -29,7 +29,6 @@ function App() {
           <div className="layout__primary">
             <CalculatorForm
               input={input}
-              markupPercent={result.markupPercent}
               onFieldChange={updateField}
               onApplyPreset={applyPreset}
             />

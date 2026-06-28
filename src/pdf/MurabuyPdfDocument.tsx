@@ -1,6 +1,5 @@
 import {
   Document,
-  Image,
   Page,
   StyleSheet,
   Text,
@@ -24,9 +23,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  logo: {
-    width: 140,
-    marginBottom: 8,
+  logoText: {
+    fontSize: 26,
+    fontWeight: 700,
+    letterSpacing: 2,
+    color: '#111111',
+    marginBottom: 6,
   },
   title: {
     fontSize: 16,
@@ -134,7 +136,6 @@ interface MurabuyPdfDocumentProps {
   result: CalculationResult;
   buyerName: string;
   guarantorName: string;
-  logoUrl: string;
   generatedAt: Date;
 }
 
@@ -156,7 +157,6 @@ export function MurabuyPdfDocument({
   result,
   buyerName,
   guarantorName,
-  logoUrl,
   generatedAt,
 }: MurabuyPdfDocumentProps) {
   const metrics = [
@@ -174,7 +174,7 @@ export function MurabuyPdfDocument({
     <Document title="MURABUY — Расчёт рассрочки">
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image src={logoUrl} style={styles.logo} />
+          <Text style={styles.logoText}>MURABUY</Text>
           <Text style={styles.title}>Расчёт исламской рассрочки</Text>
           <Text style={styles.subtitle}>MURABUY · мурабаха без процентной ставки</Text>
         </View>

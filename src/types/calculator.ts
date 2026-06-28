@@ -2,6 +2,7 @@ export interface CalculatorInput {
   productCost: number;
   downPayment: number;
   termMonths: number;
+  markupPercent: number;
   startDate: string;
 }
 

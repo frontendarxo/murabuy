@@ -27,6 +27,8 @@ const MARKUP_BY_TERM: Record<number, number> = {
 
 export const MIN_TERM = 1;
 export const MAX_TERM = 24;
+export const MIN_MARKUP_PERCENT = 0;
+export const MAX_MARKUP_PERCENT = 100;
 export const MIN_DOWN_PAYMENT = 0;
 export const MAX_DOWN_PAYMENT = 10_000_000;
 export const MIN_PRODUCT_COST = 1;

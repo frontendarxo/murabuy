@@ -14,14 +14,11 @@ export async function generateMurabuyPdf(
 ): Promise<Blob> {
   registerPdfFonts();
 
-  const logoUrl = `${window.location.origin}/logo-integrated.png`;
-
   return pdf(
     <MurabuyPdfDocument
       result={result}
       buyerName={parties.buyerName}
       guarantorName={parties.guarantorName}
-      logoUrl={logoUrl}
       generatedAt={new Date()}
     />,
   ).toBlob();

@@ -1,5 +1,5 @@
 import type { CalculationResult, CalculatorInput, PaymentEntry } from '../types/calculator';
-import { getMarkupPercent } from './markup';
+import { MAX_MARKUP_PERCENT, MIN_MARKUP_PERCENT, getMarkupPercent } from './markup';
 
 function addMonths(date: Date, months: number): Date {
   const result = new Date(date);
@@ -21,7 +21,10 @@ function buildPaymentAmounts(amountToFinance: number, termMonths: number): numbe
 }
 
 export function calculateInstallment(input: CalculatorInput): CalculationResult {
-  const markupPercent = getMarkupPercent(input.termMonths);
+  const fallbackMarkupPercent = getMarkupPercent(input.termMonths);
+  const markupPercent = Number.isFinite(input.markupPercent)
+    ? Math.min(MAX_MARKUP_PERCENT, Math.max(MIN_MARKUP_PERCENT, input.markupPercent))
+    : fallbackMarkupPercent;
   const totalPrice = Math.round(input.productCost * (1 + markupPercent / 100));
   const amountToFinance = Math.max(totalPrice - input.downPayment, 0);
   const paymentAmounts = buildPaymentAmounts(amountToFinance, input.termMonths);
