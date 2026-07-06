@@ -1,6 +1,6 @@
 import { pdf } from '@react-pdf/renderer';
 import type { CalculationResult } from '../types/calculator';
-import { MurabuyPdfDocument } from './MurabuyPdfDocument';
+import { ClientPdfDocument } from './ClientPdfDocument';
 import { registerPdfFonts } from './fonts';
 
 export interface PdfParties {
@@ -15,7 +15,7 @@ export async function generateMurabuyPdf(
   registerPdfFonts();
 
   return pdf(
-    <MurabuyPdfDocument
+    <ClientPdfDocument
       result={result}
       buyerName={parties.buyerName}
       guarantorName={parties.guarantorName}

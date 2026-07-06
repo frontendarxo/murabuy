@@ -12,10 +12,9 @@ export function buildWhatsAppUrl(result: CalculationResult): string {
     .join('\n');
 
   const message = [
-    'Ассаламу Алайкум! Прошу оформить исламскую рассрочку MURABUY.',
+    'Условия покупки в рассрочку',
     '',
     `Стоимость товара: ${formatCurrency(result.productCost)}`,
-    `Наценка: ${result.markupPercent}%`,
     `Итоговая стоимость: ${formatCurrency(result.totalPrice)}`,
     `Первоначальный взнос: ${formatCurrency(result.downPayment)}`,
     `Срок: ${result.termMonths} мес.`,

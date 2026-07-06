@@ -5,19 +5,23 @@ import {
   Text,
   View,
 } from '@react-pdf/renderer';
+import { clientConfig } from '../config/clients/murabuy';
 import type { CalculationResult } from '../types/calculator';
 import { formatCurrency } from '../utils/format';
 import { registerPdfFonts } from './fonts';
 
 registerPdfFonts();
 
+const { brand, documents, features, theme } = clientConfig;
+const pdfTheme = theme.pdf;
+
 const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontFamily: 'Manrope',
     fontSize: 10,
-    color: '#111111',
-    backgroundColor: '#ffffff',
+    color: pdfTheme.text,
+    backgroundColor: pdfTheme.surface,
   },
   header: {
     alignItems: 'center',
@@ -27,7 +31,7 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: 700,
     letterSpacing: 2,
-    color: '#111111',
+    color: pdfTheme.text,
     marginBottom: 6,
   },
   title: {
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 9,
-    color: '#3a3a3a',
+    color: pdfTheme.mutedText,
   },
   section: {
     marginBottom: 18,
@@ -46,7 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: 700,
     marginBottom: 10,
-    color: '#c9a35a',
+    color: pdfTheme.primary,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -55,10 +59,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#e8e3db',
+    borderBottomColor: pdfTheme.border,
   },
   rowLabel: {
-    color: '#3a3a3a',
+    color: pdfTheme.mutedText,
     flex: 1,
   },
   rowValue: {
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
   },
   partiesBox: {
     padding: 14,
-    backgroundColor: '#f2f0eb',
+    backgroundColor: pdfTheme.background,
     borderRadius: 8,
     marginBottom: 18,
   },
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
   },
   partyLabel: {
     fontSize: 8,
-    color: '#6f6a62',
+    color: pdfTheme.mutedText,
     marginBottom: 3,
   },
   partyName: {
@@ -86,23 +90,23 @@ const styles = StyleSheet.create({
   },
   highlight: {
     padding: 14,
-    backgroundColor: '#111111',
+    backgroundColor: pdfTheme.text,
     borderRadius: 8,
     marginBottom: 18,
   },
   highlightLabel: {
-    color: '#d9bc7d',
+    color: pdfTheme.primaryLight,
     fontSize: 9,
     marginBottom: 4,
   },
   highlightValue: {
-    color: '#ffffff',
+    color: pdfTheme.white,
     fontSize: 18,
     fontWeight: 700,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#f2f0eb',
+    backgroundColor: pdfTheme.background,
     paddingVertical: 8,
     paddingHorizontal: 6,
     fontWeight: 700,
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     paddingHorizontal: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#e8e3db',
+    borderBottomColor: pdfTheme.border,
   },
   colNumber: { width: '8%' },
   colDate: { width: '32%' },
@@ -122,17 +126,17 @@ const styles = StyleSheet.create({
   disclaimer: {
     marginTop: 16,
     fontSize: 8,
-    color: '#6f6a62',
+    color: pdfTheme.mutedText,
     lineHeight: 1.5,
   },
   footer: {
     marginTop: 12,
     fontSize: 8,
-    color: '#6f6a62',
+    color: pdfTheme.mutedText,
   },
 });
 
-interface MurabuyPdfDocumentProps {
+interface ClientPdfDocumentProps {
   result: CalculationResult;
   buyerName: string;
   guarantorName: string;
@@ -140,7 +144,7 @@ interface MurabuyPdfDocumentProps {
 }
 
 function formatGeneratedDate(date: Date): string {
-  return date.toLocaleString('ru-RU', {
+  return date.toLocaleString(clientConfig.business.locale, {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -150,15 +154,15 @@ function formatGeneratedDate(date: Date): string {
 }
 
 function formatStartDate(value: string): string {
-  return new Date(value).toLocaleDateString('ru-RU');
+  return new Date(value).toLocaleDateString(clientConfig.business.locale);
 }
 
-export function MurabuyPdfDocument({
+export function ClientPdfDocument({
   result,
   buyerName,
   guarantorName,
   generatedAt,
-}: MurabuyPdfDocumentProps) {
+}: ClientPdfDocumentProps) {
   const metrics = [
     ['Стоимость товара / услуги', formatCurrency(result.productCost)],
     ['Первоначальный взнос', formatCurrency(result.downPayment)],
@@ -171,12 +175,12 @@ export function MurabuyPdfDocument({
   ];
 
   return (
-    <Document title="MURABUY — Расчёт рассрочки">
+    <Document title={documents.title}>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.logoText}>MURABUY</Text>
-          <Text style={styles.title}>Расчёт исламской рассрочки</Text>
-          <Text style={styles.subtitle}>MURABUY · мурабаха без процентной ставки</Text>
+          <Text style={styles.logoText}>{brand.name}</Text>
+          <Text style={styles.title}>{documents.heading}</Text>
+          <Text style={styles.subtitle}>{documents.subtitle}</Text>
         </View>
 
         <View style={styles.partiesBox}>
@@ -205,28 +209,27 @@ export function MurabuyPdfDocument({
           ))}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>График платежей</Text>
-          <View style={styles.tableHeader}>
-            <Text style={styles.colNumber}>№</Text>
-            <Text style={styles.colDate}>Дата</Text>
-            <Text style={styles.colAmount}>Сумма</Text>
-            <Text style={styles.colDebt}>Остаток</Text>
-          </View>
-          {result.schedule.map((entry) => (
-            <View key={entry.number} style={styles.tableRow}>
-              <Text style={styles.colNumber}>{entry.number}</Text>
-              <Text style={styles.colDate}>{entry.date}</Text>
-              <Text style={styles.colAmount}>{formatCurrency(entry.amount)}</Text>
-              <Text style={styles.colDebt}>{formatCurrency(entry.remainingDebt)}</Text>
+        {features.paymentSchedule && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>График платежей</Text>
+            <View style={styles.tableHeader}>
+              <Text style={styles.colNumber}>№</Text>
+              <Text style={styles.colDate}>Дата</Text>
+              <Text style={styles.colAmount}>Сумма</Text>
+              <Text style={styles.colDebt}>Остаток</Text>
             </View>
-          ))}
-        </View>
+            {result.schedule.map((entry) => (
+              <View key={entry.number} style={styles.tableRow}>
+                <Text style={styles.colNumber}>{entry.number}</Text>
+                <Text style={styles.colDate}>{entry.date}</Text>
+                <Text style={styles.colAmount}>{formatCurrency(entry.amount)}</Text>
+                <Text style={styles.colDebt}>{formatCurrency(entry.remainingDebt)}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
-        <Text style={styles.disclaimer}>
-          Расчёт предварительный. Итоговые условия рассрочки подтверждает менеджер MURABUY.
-          Для оформления потребуются паспорт покупателя, паспорт поручителя и контактный телефон.
-        </Text>
+        <Text style={styles.disclaimer}>{documents.disclaimer}</Text>
         <Text style={styles.footer}>Документ сформирован: {formatGeneratedDate(generatedAt)}</Text>
       </Page>
     </Document>
