@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CalculationResult } from '../types/calculator';
-import { buildWhatsAppUrl } from '../utils/whatsapp';
+import { canUseNativeShare, shareCalculation } from '../utils/share';
 import { PrintModal } from './PrintModal';
 
 interface ActionBarProps {
@@ -13,11 +13,16 @@ export function ActionBar({ result, onSave }: ActionBarProps) {
   const [isPdfLoading, setIsPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
 
-  const whatsappUrl = buildWhatsAppUrl(result);
+  const shareLabel = canUseNativeShare(result) ? 'Поделиться' : 'Отправить расчёт в WhatsApp';
 
-  const handleWhatsApp = () => {
+  const handleShare = async () => {
     onSave();
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
+    try {
+      await shareCalculation(result);
+    } catch {
+      // shareCalculation уже открывает WhatsApp как запасной вариант
+    }
   };
 
   const handleOpenPrintModal = () => {
@@ -57,8 +62,8 @@ export function ActionBar({ result, onSave }: ActionBarProps) {
   return (
     <>
       <section className="action-bar">
-        <button type="button" className="btn btn--primary" onClick={handleWhatsApp}>
-          Отправить расчёт в WhatsApp
+        <button type="button" className="btn btn--primary" onClick={handleShare}>
+          {shareLabel}
         </button>
         <button type="button" className="btn btn--secondary" onClick={handleOpenPrintModal}>
           Печать результата

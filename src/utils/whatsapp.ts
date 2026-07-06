@@ -3,7 +3,7 @@ import { formatCurrency } from './format';
 
 const WHATSAPP_PHONE = '+79889033858';
 
-export function buildWhatsAppUrl(result: CalculationResult): string {
+export function buildCalculationMessage(result: CalculationResult): string {
   const scheduleLines = result.schedule
     .map(
       (entry) =>
@@ -11,7 +11,7 @@ export function buildWhatsAppUrl(result: CalculationResult): string {
     )
     .join('\n');
 
-  const message = [
+  return [
     'Условия покупки в рассрочку',
     '',
     `Стоимость товара: ${formatCurrency(result.productCost)}`,
@@ -30,6 +30,8 @@ export function buildWhatsAppUrl(result: CalculationResult): string {
     '— Паспорт поручителя',
     '— Контактный номер телефона',
   ].join('\n');
+}
 
-  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+export function buildWhatsAppUrl(result: CalculationResult): string {
+  return `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(buildCalculationMessage(result))}`;
 }
